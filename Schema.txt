@@ -1,0 +1,76 @@
+3 tables for users:
+registered and not yet active user
+tenant customer
+tenant user (admin/agent/supervisor)
+possible supertype for user including the name id and the mapped table
+
+
+Tenant
+------
+Id
+Name
+PrivateKey
+ConatactEmail
+Status
+
+Conversation
+------------
+Id
+TenantId
+CustomerId
+AssignedAgentId?
+Status (Open / Closed)
+CreatedAt
+
+Message
+-------
+Id
+ConversationId
+SenderType (Customer / Agent / System)
+SenderId
+TextBody
+CreatedAt
+
+MessageParticipantState
+-----------------------
+MessageId
+ParticipantType (Customer / Agent)
+ParticipantId
+DeliveredAt?
+SeenAt?
+
+MessageMedia
+------------
+Id
+MessageId
+MediaPath
+MediaType
+FileSize
+
+Plan
+----
+Id
+Name
+PriceMonthly
+MaxAgents
+MaxConversations
+RetentionDays
+
+Subscription
+------------
+Id
+TenantId
+PlanId
+Status (Active / PastDue / Canceled)
+CurrentPeriodStart
+CurrentPeriodEnd
+CancelAtPeriodEnd
+
+UsageRecord
+-----------
+TenantId
+PeriodStart
+PeriodEnd
+MessagesCount
+ConversationsCount
+AgentsCount
