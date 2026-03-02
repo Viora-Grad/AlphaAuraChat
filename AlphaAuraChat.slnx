@@ -1,5 +1,8 @@
 <Solution>
   <Project Path="AlphaAuraChat.api/AlphaAuraChat.Api.csproj" />
   <Project Path="AlphaAuraChat.Application/AlphaAuraChat.Application.csproj" Id="be6a6349-3edb-4142-b12a-ac77802318c4" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="Domain/AlphaAuraChat.Domain.csproj" />
 </Solution>

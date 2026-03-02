@@ -1,0 +1,6 @@
+services:
+  alphaaurachat.api:
+    image: ${DOCKER_REGISTRY-}alphaaurachatapi
+    build:
+      context: .
+      dockerfile: AlphaAuraChat.api/Dockerfile
