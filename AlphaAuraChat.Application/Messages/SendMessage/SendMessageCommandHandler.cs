@@ -9,6 +9,13 @@ using AlphaAuraChat.Domain.Messages;
 
 namespace AlphaAuraChat.Application.Messages.SendMessage;
 
+/// <summary>
+/// Handles the processing of send message commands, including message creation, storage, and real-time notification
+/// within a conversation.
+/// </summary>
+/// <exception cref="NotFoundException"></exception>
+/// <remarks>This handler ensures that messages are created and stored reliably, and that recipients are notified
+/// in real time. It also manages media uploads when messages include attachments </remarks>
 internal sealed class SendMessageCommandHandler(
     IMessagesRepository messagesRepository,
     IConversationRepository conversationRepository,
@@ -32,8 +39,7 @@ internal sealed class SendMessageCommandHandler(
 
         messagesRepository.Add(message);
 
-        if (request.Media is not null)
-            await storage.UploadAsync(request.Media, cancellationToken);
+        await SaveAndUploadMedia(request.Media, cancellationToken);
 
         await realTimeNotifier.SendMessageAsync(
             recieverId,
@@ -44,5 +50,15 @@ internal sealed class SendMessageCommandHandler(
             cancellationToken);
 
         return Result.Success();
+    }
+
+    private async Task SaveAndUploadMedia(IEnumerable<MediaUploadModel>? media, CancellationToken cancellationToken)
+    {
+        if (media == null || media.Any() == false)
+            return;
+
+        await storage.UploadAsync(media, cancellationToken);
+
+
     }
 }
