@@ -1,4 +1,4 @@
-﻿using AlphaAuraChat.Domain.Abstractions;
+using AlphaAuraChat.Domain.Abstractions;
 
 namespace AlphaAuraChat.Domain.Plans.Internal;
 
