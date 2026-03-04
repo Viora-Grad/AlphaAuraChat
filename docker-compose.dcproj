@@ -9,6 +9,7 @@
     <DockerServiceName>alphaaurachat.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="csharp AlphaAuraChat.Domain\Plans\Internal\Limitations.cs" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>

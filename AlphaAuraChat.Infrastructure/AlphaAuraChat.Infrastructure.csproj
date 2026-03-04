@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AlphaAuraChat.Application\AlphaAuraChat.Application.csproj" />
+    <ProjectReference Include="..\AlphaAuraChat.Domain\AlphaAuraChat.Domain.csproj" />
     <ProjectReference Include="..\AlphaAuraChat\AlphaAuraChat.Application\AlphaAuraChat.Application.csproj" />
     <ProjectReference Include="..\AlphaAuraChat\Domain\AlphaAuraChat.Domain.csproj" />
   </ItemGroup>
