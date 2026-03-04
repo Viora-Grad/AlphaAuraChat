@@ -72,6 +72,7 @@ public sealed class Plan : Entity
         Status = PlanStatus.Cancelled;
         return Result.Success();
     }
+    // considering whether this belongs here or in a separate service, since it may involve more complex logic related to existing subscriptions, etc.
     public Result UpdateLimitations(Limitations newLimitations)
     {
         if (newLimitations == Limitations)
