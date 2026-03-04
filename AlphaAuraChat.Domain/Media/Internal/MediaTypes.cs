@@ -1,4 +1,4 @@
-﻿namespace AlphaAuraChat.Domain.Messages.Internal;
+﻿namespace AlphaAuraChat.Domain.Media.Internal;
 
 public enum MediaTypes
 {

@@ -1,6 +1,7 @@
 ﻿using AlphaAuraChat.Domain.Abstractions;
+using AlphaAuraChat.Domain.Media.Internal;
 
-namespace AlphaAuraChat.Domain.Messages.Internal;
+namespace AlphaAuraChat.Domain.Media;
 
 // Mime Type is to be stored and defined in the infrastructure layer.
 public sealed class MessageMedia : Entity
@@ -18,10 +19,10 @@ public sealed class MessageMedia : Entity
 
     private MessageMedia() : base() { } // for EfCore
 
-    public static Result<MessageMedia> Create(Guid messageId, MediaTypes type, long sizeInBytes, long maxSizeInBytes)
+    public static Result<MessageMedia> Create(Guid messageId, MediaTypes type, long sizeInBytes)
     {
-        if (sizeInBytes <= maxSizeInBytes)
-            return Result.Failure<MessageMedia>(MessageErrors.MediaSizeExceedsLimit);
+        if (sizeInBytes <= MediaRules.MaxSizeInBytes)
+            return Result.Failure<MessageMedia>(MediaErrors.MediaSizeExceedsLimit);
 
         return Result.Success(new MessageMedia(Guid.NewGuid(), messageId, type, sizeInBytes));
     }

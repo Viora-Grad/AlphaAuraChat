@@ -3,4 +3,4 @@ using AlphaAuraChat.Application.Abstractions.Messaging;
 
 namespace AlphaAuraChat.Application.Messages.SendMessage;
 
-public record SendMessageCommand(Guid ConversationId, Guid SenderId, string Content, IEnumerable<MediaUploadModel>? Media) : ICommand;
+public sealed record SendMessageCommand(Guid ConversationId, Guid SenderId, string Content, IEnumerable<MediaUploadModel>? Media) : ICommand;
