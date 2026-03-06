@@ -13,5 +13,6 @@ public static class PlanErrors
     public static Error LimitationsExceeded => new("Plan.LimitationsExceeded", "Plan limitations exceeded.");
     public static Error LimitationsMustBeGreaterThanZero => new("Plan.LimitationsMustBeGreaterThanZero", "Plan limitations must be greater than zero.");
     public static Error InvalidLimitations => new("Plan.InvalidLimitations", "Plan limitations are invalid.");
+    public static Error SimilarPlanExists => new("Plan.SimilarPlanExists", "A similar plan already exists.");
 
 }

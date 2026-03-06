@@ -4,6 +4,13 @@ namespace AlphaAuraChat.Domain.Plans.Internal;
 
 public record Limitations(int MaximumAdmins, int MaximumSupervisors, int MaximumAgents, int MaximumConversations)
 {
+    public static Result<Limitations> Create(int maximumAdmins, int maximumSupervisors, int maximumAgents, int maximumConversations)
+    {
+        var limitations = new Limitations(maximumAdmins, maximumSupervisors, maximumAgents, maximumConversations);
+        return Validate(limitations);
+    }
+
+
     // considering making it an application exception instead of a result, but for now this is more consistent with the rest of the domain
     public static Result<Limitations> Validate(Limitations limitations)
     {

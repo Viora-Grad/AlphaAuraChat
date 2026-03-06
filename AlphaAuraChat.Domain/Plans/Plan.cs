@@ -81,11 +81,6 @@ public sealed class Plan : Entity
         if (newLimitations.Exceeds(Limitations))
             return Result.Failure(PlanErrors.LimitationsExceeded);
 
-        var validationResult = Limitations.Validate(newLimitations);
-
-        if (validationResult.IsFailure)
-            return Result.Failure(PlanErrors.InvalidLimitations);
-
         Limitations = newLimitations;
         return Result.Success();
     }
