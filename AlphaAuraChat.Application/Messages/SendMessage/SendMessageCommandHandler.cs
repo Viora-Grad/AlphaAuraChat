@@ -5,6 +5,7 @@ using AlphaAuraChat.Application.Abstractions.Messaging;
 using AlphaAuraChat.Application.Abstractions.Realtime;
 using AlphaAuraChat.Domain.Abstractions;
 using AlphaAuraChat.Domain.Conversations;
+using AlphaAuraChat.Domain.Media;
 using AlphaAuraChat.Domain.Messages;
 
 namespace AlphaAuraChat.Application.Messages.SendMessage;
@@ -19,9 +20,11 @@ namespace AlphaAuraChat.Application.Messages.SendMessage;
 internal sealed class SendMessageCommandHandler(
     IMessagesRepository messagesRepository,
     IConversationRepository conversationRepository,
+    IMediaRepository mediaRepository,
     IDateTimeProvider dateTimeProvider,
     IFileStorage storage,
-    IRealtimeNotifier realTimeNotifier) : ICommandHandler<SendMessageCommand>
+    IRealtimeNotifier realTimeNotifier,
+    IUnitOfWork unitOfWork) : ICommandHandler<SendMessageCommand>
 {
     public async Task<Result> Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
@@ -39,7 +42,10 @@ internal sealed class SendMessageCommandHandler(
 
         messagesRepository.Add(message);
 
-        await SaveAndUploadMedia(request.Media, cancellationToken);
+        var mediaSaveResult = await SaveAndUploadMedia(request.Media, message.Id, cancellationToken);
+
+        if (mediaSaveResult.IsFailure)
+            return mediaSaveResult;
 
         await realTimeNotifier.SendMessageAsync(
             recieverId,
@@ -52,13 +58,45 @@ internal sealed class SendMessageCommandHandler(
         return Result.Success();
     }
 
-    private async Task SaveAndUploadMedia(IEnumerable<MediaUploadModel>? media, CancellationToken cancellationToken)
+    private async Task<Result> SaveAndUploadMedia(IEnumerable<MediaUploadModel>? mediaUpload, Guid messageId, CancellationToken cancellationToken)
     {
-        if (media == null || media.Any() == false)
-            return;
+        // short hand if media exists or not if no media then return success otherwise continue with media upload
+        if (mediaUpload is null || mediaUpload.Any() == false)
+            return Result.Success();
 
-        await storage.UploadAsync(media, cancellationToken);
+        List<MessageMedia> messageMedias = [];
+        foreach (var media in mediaUpload)
+        {
+            var mediaResult = MessageMedia.Create(messageId, MimeToMediaTypeConvertor.Convert(media.Type), media.Content.Length, media.Name);
 
+            if (mediaResult.IsFailure)
+                return Result.Failure(mediaResult.Error);
 
+            messageMedias.Add(mediaResult.Value);
+        }
+
+        await mediaRepository.AddRangeAsync(messageMedias, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        List<Guid> failedMediaIds = [];
+
+        foreach (var (media, entity) in mediaUpload.Zip(messageMedias))
+        {
+            var path = $"media/{entity.Id}-{media.Name}";
+
+            var result = await storage.UploadAsync(media.Content, path, cancellationToken);
+
+            if (result.IsFailure)
+                failedMediaIds.Add(entity.Id);
+        }
+
+        // reroll the media upload if any of the uploads have failed and remove the failed media entities from the database to maintain consistency
+        if (failedMediaIds.Count != 0)
+        {
+            mediaRepository.RemoveRange(failedMediaIds);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        return Result.Success();
     }
 }

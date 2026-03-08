@@ -8,7 +8,8 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
 {
     protected readonly ApplicationDbContext DbContext = dbContext;
 
-    // consider adding another member to retrieve entities with out tracking for the read queries resulting in better memory management and performance
+    // consider adding another member to retrieve entities with out tracking
+    // for the read queries resulting in better memory management and performance
 
     #region query ops
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -18,14 +19,14 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
     #endregion  
 
     #region Addition ops
-    public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+    public void AddRange(IEnumerable<T> entities, CancellationToken cancellationToken)
     {
-        await DbContext.AddRangeAsync(entities, cancellationToken);
+        DbContext.AddRange(entities, cancellationToken);
     }
 
-    public virtual async Task Add(T entity, CancellationToken cancellationToken)
+    public virtual void Add(T entity, CancellationToken cancellationToken)
     {
-        await DbContext.AddAsync(entity, cancellationToken);
+        DbContext.AddAsync(entity, cancellationToken);
     }
     #endregion
 

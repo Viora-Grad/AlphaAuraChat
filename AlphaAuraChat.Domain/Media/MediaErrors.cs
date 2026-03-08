@@ -1,6 +1,6 @@
 ﻿using AlphaAuraChat.Domain.Abstractions;
 
-namespace AlphaAuraChat.Domain.Media.Internal;
+namespace AlphaAuraChat.Domain.Media;
 
 public static class MediaErrors
 {
