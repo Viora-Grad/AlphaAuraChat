@@ -75,7 +75,7 @@ internal sealed class SendMessageCommandHandler(
             messageMedias.Add(mediaResult.Value);
         }
 
-        await mediaRepository.AddRangeAsync(messageMedias, cancellationToken);
+        mediaRepository.AddRange(messageMedias);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         List<Guid> failedMediaIds = [];

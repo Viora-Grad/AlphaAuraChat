@@ -2,6 +2,6 @@
 
 public interface IMediaRepository
 {
-    public Task AddRangeAsync(IEnumerable<MessageMedia> entities);
+    public void AddRange(IEnumerable<MessageMedia> entities);
     public void RemoveRange(IEnumerable<Guid> entities);
 }

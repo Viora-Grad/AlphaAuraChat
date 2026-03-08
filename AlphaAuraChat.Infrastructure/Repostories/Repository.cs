@@ -19,14 +19,14 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
     #endregion  
 
     #region Addition ops
-    public void AddRange(IEnumerable<T> entities, CancellationToken cancellationToken)
+    public void AddRange(IEnumerable<T> entities)
     {
-        DbContext.AddRange(entities, cancellationToken);
+        DbContext.AddRange(entities);
     }
 
-    public virtual void Add(T entity, CancellationToken cancellationToken)
+    public virtual void Add(T entity)
     {
-        DbContext.AddAsync(entity, cancellationToken);
+        DbContext.Add(entity);
     }
     #endregion
 
