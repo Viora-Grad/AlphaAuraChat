@@ -1,6 +1,6 @@
 ﻿namespace AlphaAuraChat.Domain.Plans;
 
-internal interface IPlansRepository
+public interface IPlansRepository
 {
     public void Add(Plan plan);
     public Task<Plan?> GetByIdAsync(Guid id);
