@@ -18,14 +18,14 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
     #endregion  
 
     #region Addition ops
-    public async Task AddRangeAsync(IEnumerable<T> entities)
+    public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
     {
-        await DbContext.AddRangeAsync(entities);
+        await DbContext.AddRangeAsync(entities, cancellationToken);
     }
 
-    public virtual async Task Add(T entity)
+    public virtual async Task Add(T entity, CancellationToken cancellationToken)
     {
-        await DbContext.AddAsync(entity);
+        await DbContext.AddAsync(entity, cancellationToken);
     }
     #endregion
 
@@ -45,6 +45,13 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
     public void RemoveRange(IEnumerable<T> entites)
     {
         DbContext.Set<T>().RemoveRange(entites);
+    }
+
+    public void RemoveRange(IEnumerable<Guid> ids)
+    {
+        DbContext.Set<T>()
+           .Where(entity => ids.Contains(entity.Id))
+           .ExecuteDelete();
     }
     #endregion 
 }
