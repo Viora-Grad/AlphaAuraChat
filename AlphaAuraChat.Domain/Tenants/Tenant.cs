@@ -1,5 +1,4 @@
 ﻿using AlphaAuraChat.Domain.Abstractions;
-using AlphaAuraChat.Domain.Tenants.Events;
 using AlphaAuraChat.Domain.Tenants.Internal;
 
 namespace AlphaAuraChat.Domain.Tenants;
@@ -19,34 +18,33 @@ public sealed class Tenant : Entity
     }
     private Tenant() : base() { } // for EfCore
 
-    public void Activate()
+    public Result Activate()
     {
         if (Subscription.Status == Status.Active)
         {
-            return;
+            Result.Failure(TenantErrors.AlreadyActivate);
         }
         Subscription = Subscription with { Status = Status.Active };
-        RaiseDomainEvent(new TenantActivatedDomainEvent(Id));
+        return Result.Success();
     }
-    public void ChangeSubscription(Guid planId)
+    public Result ChangeSubscription(Guid planId)
     {
         if (Subscription.PlanId == planId)
         {
-            return;
+            return Result.Failure(TenantErrors.SamePlan);
         }
         Subscription = Subscription with { PlanId = planId };
-        RaiseDomainEvent(new TenantSubscriptionChangedDomainEvent(Id));
+        return Result.Success();
     }
 
-    public void RenewSubscription(TimeSpan duration, DateTime activationTimeUtc)
+    public Result RenewSubscription(TimeSpan duration, DateTime activationTimeUtc)
     {
         var newExpiryTimeUtc = activationTimeUtc.Add(duration);
-        if (Subscription.ExpiryTimeUtc > activationTimeUtc)
+        if (newExpiryTimeUtc <= activationTimeUtc)
         {
-            newExpiryTimeUtc = Subscription.ExpiryTimeUtc.Add(duration);
+            return Result.Failure(TenantErrors.InvalidDuration);
         }
-        Subscription = Subscription with { ExpiryTimeUtc = newExpiryTimeUtc };
-        RaiseDomainEvent(new TenantSubscriptionRenewedDomainEvent(Id));
-
+        Subscription = Subscription with { ExpiryTimeUtc = newExpiryTimeUtc, Status = Status.Active };
+        return Result.Success();
     }
 }
