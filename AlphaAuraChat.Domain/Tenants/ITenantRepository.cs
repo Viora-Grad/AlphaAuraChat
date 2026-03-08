@@ -2,5 +2,6 @@
 
 public interface ITenantRepository
 {
-    Task<Tenant?> GetByIdAsync(Guid tenantId, CancellationToken cancellationToken);
+    public Task<Tenant?> GetByIdAsync(Guid tenantId, CancellationToken cancellationToken);
+    public void Add(Tenant tenant);
 }

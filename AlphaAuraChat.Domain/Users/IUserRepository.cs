@@ -2,4 +2,5 @@
 
 public interface IUserRepository
 {
+    public Task<User> GetByIdAsync(Guid id);
 }

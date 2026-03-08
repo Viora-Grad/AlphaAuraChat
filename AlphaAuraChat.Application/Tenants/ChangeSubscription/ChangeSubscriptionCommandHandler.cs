@@ -4,7 +4,7 @@ using AlphaAuraChat.Domain.Abstractions;
 using AlphaAuraChat.Domain.Plans;
 using AlphaAuraChat.Domain.Tenants;
 
-namespace AlphaAuraChat.Application.Tenant.ChangeSubscriprion;
+namespace AlphaAuraChat.Application.Tenants.ChangeSubscriprion;
 
 internal class ChangeSubscriptionCommandHandler(
     IPlansRepository planRepository,

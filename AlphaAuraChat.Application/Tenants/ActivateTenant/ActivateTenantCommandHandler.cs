@@ -3,7 +3,7 @@ using AlphaAuraChat.Application.Abstractions.Messaging;
 using AlphaAuraChat.Domain.Abstractions;
 using AlphaAuraChat.Domain.Tenants;
 
-namespace AlphaAuraChat.Application.Tenant.ActivateTenant;
+namespace AlphaAuraChat.Application.Tenants.ActivateTenant;
 
 internal sealed class ActivateTenantCommandHandler(
     ITenantRepository tenantRepository,

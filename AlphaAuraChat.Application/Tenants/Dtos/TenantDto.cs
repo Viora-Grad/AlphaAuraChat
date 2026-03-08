@@ -1,6 +1,6 @@
 ﻿using AlphaAuraChat.Domain.Tenants.Internal;
 
-namespace AlphaAuraChat.Application.Tenant.Dtos;
+namespace AlphaAuraChat.Application.Tenants.Dtos;
 
 public class TenantDto
 {

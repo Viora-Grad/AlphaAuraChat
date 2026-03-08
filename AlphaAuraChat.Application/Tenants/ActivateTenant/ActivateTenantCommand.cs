@@ -1,5 +1,5 @@
 ﻿using AlphaAuraChat.Application.Abstractions.Messaging;
 
-namespace AlphaAuraChat.Application.Tenant.ActivateTenant;
+namespace AlphaAuraChat.Application.Tenants.ActivateTenant;
 
 public record ActivateTenantCommand(Guid tenantId) : ICommand;
