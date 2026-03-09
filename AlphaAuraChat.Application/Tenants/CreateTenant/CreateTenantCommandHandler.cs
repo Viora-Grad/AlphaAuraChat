@@ -28,7 +28,7 @@ public class CreateTenantCommandHandler(
 {
     private readonly ITenantRepository _tenantRepository = tenantRepository;
     private readonly IUserRepository _userRepository = userRepository;
-    private readonly KeyGenerationService _generateKeyService = generateKeyService;
+    private readonly IKeyGenerationService _generateKeyService = generateKeyService;
     private readonly ICipher _cipher = cipher;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IDateTimeProvider _DateTimeProvider = dateTimeProvider;
