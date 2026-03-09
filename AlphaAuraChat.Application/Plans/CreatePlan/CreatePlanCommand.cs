@@ -1,4 +1,5 @@
 ﻿using AlphaAuraChat.Application.Abstractions.Messaging;
+using AlphaAuraChat.Domain.Plans;
 
 namespace AlphaAuraChat.Application.Plans.CreatePlan;
 
@@ -9,7 +10,7 @@ public sealed record CreatePlanCommand(
     int DurationInDays,
     decimal Price,
     LimitationsDto Limitations
-    ) : ICommand;
+    ) : ICommand<Plan>;
 
 
 public record LimitationsDto(

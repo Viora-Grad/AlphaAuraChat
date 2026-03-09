@@ -10,12 +10,18 @@ namespace AlphaAuraChat.Application.Plans.CreatePlan;
 /// and persists it to the database.
 /// </summary>
 /// <remarks>
-/// Accessible users: AlphaAuraChat administrators. This handler is not exposed through any public API and is intended for internal use only, such as during initial seeding or administrative operations.
+/// <para>
+/// Accessible users: AlphaAuraChat administrators. This handler is not exposed through any public API and is intended for internal use only, such as during initial seeding or administrative operations.<br></br>
+/// <strong>Note: </strong>Currently returns the full Plan entity. May be changed to return only Guid in the future. 
+/// </para>
 /// </remarks>
+/// <param name="plansRepository"> Repository for managing plan entities, used to check for existing similar plans and to add new plans.</param>
+/// <param name="unitOfWork"> Unit of work for managing transactional operations, ensuring that all changes are committed atomically.</param>
+/// 
 
-internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository, IUnitOfWork unitOfWork) : ICommandHandler<CreatePlanCommand>
+internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository, IUnitOfWork unitOfWork) : ICommandHandler<CreatePlanCommand, Plan>
 {
-    public async Task<Result> Handle(CreatePlanCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Plan>> Handle(CreatePlanCommand request, CancellationToken cancellationToken)
     {
         var limitations = Limitations.Create(
             request.Limitations.MaximumAdmins,
@@ -25,12 +31,12 @@ internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository,
 
         if (limitations.IsFailure)
         {
-            return Result.Failure(limitations.Error); // might throw exceptions here instead but leave it untill validation is implemented 
+            return Result.Failure<Plan>(limitations.Error); // might throw exceptions here instead but leave it untill validation is implemented 
         }
 
         var price = new Money(request.Price, Currency.Egp);
         if (await plansRepository.IsSimilarExists(limitations.Value, price))
-            return Result.Failure(PlanErrors.SimilarPlanExists);
+            return Result.Failure<Plan>(PlanErrors.SimilarPlanExists);
 
         var plan = Plan.Create(
             new Name(request.Name),
@@ -43,7 +49,8 @@ internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository,
         plansRepository.Add(plan);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        // TODO: Consider returning only the Guid of the created plan instead of the full entity for better encapsulation and to avoid exposing unnecessary details.
+        return Result.Success<Plan>(plan);
     }
 
 

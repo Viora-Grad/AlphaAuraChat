@@ -77,9 +77,11 @@ public sealed class Plan : Entity
     {
         if (newLimitations == Limitations)
             return Result.Failure(PlanErrors.LimitationsMirrored);
-
+        /*
+         // this is no longer needed since only administrators can update plans, 
         if (newLimitations.Exceeds(Limitations))
             return Result.Failure(PlanErrors.LimitationsExceeded);
+        */
 
         Limitations = newLimitations;
         return Result.Success();
