@@ -35,13 +35,13 @@ public class CreateTenantCommandHandler(
 
     public async Task<Result<Guid>> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
     {
-        var owner = await _userRepository.GetByIdAsync(request.tenantOwner.Id)
+        var owner = await _userRepository.GetByIdAsync(request.tenantOwner.Id, cancellationToken)
             ?? throw new NotFoundException($"User with id {request.tenantOwner.Id} not found");
         var key = _generateKeyService.GenerateKey();
         var encryptedKey = _cipher.Encrypt(key);
         var newTenant = DomainTenant.Create(request.name, request.contanct, owner, encryptedKey, _DateTimeProvider.UtcNow);
         _tenantRepository.Add(newTenant);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return Result<Guid>.Success(newTenant.Id);
+        return Result.Success(newTenant.Id);
     }
 }
