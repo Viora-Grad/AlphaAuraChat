@@ -9,6 +9,7 @@ public sealed record CreatePlanCommand(
     string Eula,
     int DurationInDays,
     decimal Price,
+    string CurrencyCode,
     LimitationsDto Limitations
     ) : ICommand<Plan>;
 

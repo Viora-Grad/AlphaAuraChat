@@ -34,7 +34,8 @@ internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository,
             return Result.Failure<Plan>(limitations.Error); // might throw exceptions here instead but leave it untill validation is implemented 
         }
 
-        var price = new Money(request.Price, Currency.Egp);
+        var currency = Currency.FromCode(request.CurrencyCode);
+        var price = new Money(request.Price, currency);
         if (await plansRepository.IsSimilarExists(limitations.Value, price))
             return Result.Failure<Plan>(PlanErrors.SimilarPlanExists);
 
@@ -50,7 +51,7 @@ internal sealed class CreatePlanCommandHandler(IPlansRepository plansRepository,
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         // TODO: Consider returning only the Guid of the created plan instead of the full entity for better encapsulation and to avoid exposing unnecessary details.
-        return Result.Success<Plan>(plan);
+        return Result.Success(plan);
     }
 
 
