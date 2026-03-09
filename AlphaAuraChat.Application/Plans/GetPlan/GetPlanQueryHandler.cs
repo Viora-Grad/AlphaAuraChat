@@ -10,9 +10,8 @@ internal sealed class GetPlanQueryHandler(IPlansRepository plansRepository) : IQ
 {
     public async Task<Result<PlanResponse>> Handle(GetPlanQuery request, CancellationToken cancellationToken)
     {
-        var plan = await plansRepository.GetByIdAsync(request.PlanId, cancellationToken);
-        if (plan is null)
-            throw new NotFoundException($"Plan with ID {request.PlanId} not found."); // Exception thrown instead of an error if the plan is not found as error only reflects domain errors, not application errors
+        var plan = await plansRepository.GetByIdAsync(request.PlanId, cancellationToken) ??
+            throw new NotFoundException($"Plan with ID {request.PlanId} not found.");
 
         var response = new PlanResponse()
         {
