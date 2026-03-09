@@ -32,4 +32,4 @@ public class KeyGenerationService : IKeyGenerationService
         return result.ToString();
     }
 }
-}
+
