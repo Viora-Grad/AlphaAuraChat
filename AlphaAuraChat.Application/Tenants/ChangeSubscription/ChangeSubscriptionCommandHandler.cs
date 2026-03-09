@@ -6,6 +6,12 @@ using AlphaAuraChat.Domain.Tenants;
 
 namespace AlphaAuraChat.Application.Tenants.ChangeSubscriprion;
 
+/// <summary>
+/// Handles changing the subscription plan of a tenant.
+/// This operation updates the tenant subscription
+/// to a new plan based on the provided plan identifier.
+/// </summary>
+
 internal class ChangeSubscriptionCommandHandler(
     IPlansRepository planRepository,
     ITenantRepository tenantRepository,
@@ -17,16 +23,10 @@ internal class ChangeSubscriptionCommandHandler(
     private readonly ITenantRepository _tenantRepository = tenantRepository;
     public async Task<Result> Handle(ChangeSubscriptionCommand request, CancellationToken cancellationToken)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(request.tenantId, cancellationToken);
-        if (tenant is null)
-        {
-            throw new NotFoundException($"this tenant with id {request.tenantId} not found");
-        }
-        var plan = await _planRepository.GetByIdAsync(request.plandId);
-        if (plan is null)
-        {
-            throw new NotFoundException($"this plan with id {request.plandId} not found");
-        }
+        var tenant = await _tenantRepository.GetByIdAsync(request.tenantId, cancellationToken)
+            ?? throw new NotFoundException($"this tenant with id {request.tenantId} not found");
+        var plan = await _planRepository.GetByIdAsync(request.plandId)
+            ?? throw new NotFoundException($"this plan with id {request.plandId} not found");
         tenant.ChangeSubscription(request.plandId);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();

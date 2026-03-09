@@ -4,16 +4,26 @@ using AlphaAuraChat.Application.Abstractions.Exceptions;
 using AlphaAuraChat.Application.Abstractions.Messaging;
 using AlphaAuraChat.Domain.Abstractions;
 using AlphaAuraChat.Domain.Tenants;
+using AlphaAuraChat.Domain.Tenants.Services;
 using AlphaAuraChat.Domain.Users;
 using DomainTenant = AlphaAuraChat.Domain.Tenants.Tenant;
+
+
 namespace AlphaAuraChat.Application.Tenants.CreateTenant;
+
+
+/// <summary>
+/// Handles the creation of a new tenant in the system.
+/// This handler generates a unique tenant key, creates the tenant aggregate,
+/// and persists it using the tenant repository.
+///</summary>
 
 public class CreateTenantCommandHandler(
     ITenantRepository tenantRepository,
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     ICipher cipher,
-    KeyGenerationService generateKeyService,
+    IKeyGenerationService generateKeyService,
     IDateTimeProvider dateTimeProvider) : ICommandHandler<CreateTenantCommand, Guid>
 {
     private readonly ITenantRepository _tenantRepository = tenantRepository;
@@ -25,16 +35,13 @@ public class CreateTenantCommandHandler(
 
     public async Task<Result<Guid>> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
     {
-        var onwer = await _userRepository.GetByIdAsync(request.tenantOwner.Id);
-        if (onwer == null)
-        {
-            throw new NotFoundException($"User with id {request.tenantOwner.Id} not found");
-        }
+        var owner = await _userRepository.GetByIdAsync(request.tenantOwner.Id)
+            ?? throw new NotFoundException($"User with id {request.tenantOwner.Id} not found");
         var key = _generateKeyService.GenerateKey();
-        var encryptionKey = _cipher.Encrypt(key);
-        var newTenant = DomainTenant.Create(request.name, request.contanct, onwer, encryptionKey, _DateTimeProvider.UtcNow);
+        var encryptedKey = _cipher.Encrypt(key);
+        var newTenant = DomainTenant.Create(request.name, request.contanct, owner, encryptedKey, _DateTimeProvider.UtcNow);
         _tenantRepository.Add(newTenant);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<Guid>.Success(newTenant.Id);
     }
 }
