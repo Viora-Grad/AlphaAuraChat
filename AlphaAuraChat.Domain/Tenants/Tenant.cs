@@ -22,7 +22,7 @@ public sealed class Tenant : Entity
     private Tenant() : base() { } // for EfCore
 
 
-    public static Tenant Create(Name name, Contact contact, User owner, string key, DateTime activationTimeUtc)
+    public static Tenant Create(Name name, Contact contact, User onwer, string key, DateTime activationTimeUtc)
     {
         var tenant = new Tenant(
             Guid.NewGuid(),
@@ -30,25 +30,21 @@ public sealed class Tenant : Entity
             contact,
             new PrivateKey(key, activationTimeUtc, 1),
             Subscription.CreateDefaultSubscription(),
-            owner);
+            onwer);
         return tenant;
 
     }
     public Result Activate()
     {
         if (Subscription.Status == Status.Active)
-        {
             Result.Failure(TenantErrors.AlreadyActivate);
-        }
         Subscription = Subscription with { Status = Status.Active };
         return Result.Success();
     }
     public Result ChangeSubscription(Guid planId)
     {
         if (Subscription.PlanId == planId)
-        {
             return Result.Failure(TenantErrors.SamePlan);
-        }
         Subscription = Subscription with { PlanId = planId };
         return Result.Success();
     }
@@ -57,9 +53,7 @@ public sealed class Tenant : Entity
     {
         var newExpiryTimeUtc = activationTimeUtc.Add(duration);
         if (newExpiryTimeUtc <= activationTimeUtc)
-        {
             return Result.Failure(TenantErrors.InvalidDuration);
-        }
         Subscription = Subscription with { ExpiryTimeUtc = newExpiryTimeUtc, Status = Status.Active };
         return Result.Success();
     }

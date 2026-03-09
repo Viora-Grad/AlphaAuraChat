@@ -1,4 +1,5 @@
 ﻿using AlphaAuraChat.Application.Abstractions.Behaviors;
+using AlphaAuraChat.Domain.Tenants.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AlphaAuraChat.Application;
@@ -13,6 +14,7 @@ public static class DependencyInjection
             configurations.AddOpenBehavior(typeof(ValidationBehavior<,>));
             configurations.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
+        services.AddTransient<IKeyGenerationService, KeyGenerationService>();
         return services;
     }
 }
