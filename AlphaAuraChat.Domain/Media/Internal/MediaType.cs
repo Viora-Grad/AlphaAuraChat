@@ -1,6 +1,6 @@
 ﻿namespace AlphaAuraChat.Domain.Media.Internal;
 
-public enum MediaTypes
+public enum MediaType
 {
     Image = 1,
     Video = 2,
