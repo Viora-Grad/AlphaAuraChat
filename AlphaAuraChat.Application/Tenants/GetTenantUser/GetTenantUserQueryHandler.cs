@@ -6,7 +6,16 @@ using AlphaAuraChat.Domain.Users;
 
 namespace AlphaAuraChat.Application.Tenants.GetTenantUser;
 
-public class GetUserTenantQueryHandler(
+/// <summary>
+/// Handles the GetUserTenant query by retrieving tenant information 
+/// associated with a specific user. This handler encapsulates the 
+/// read-only logic for mapping user data to tenant details, ensuring 
+/// that the application layer can access structured tenant information 
+/// without exposing domain internals.
+/// </summary>
+
+
+public class GetTenantUserQueryHandler(
     ITenantRepository tenantRepository,
     IUserRepository userRepository) : IQueryHandler<GetTenantUserQuery, IEnumerable<UserResponse>>
 {
