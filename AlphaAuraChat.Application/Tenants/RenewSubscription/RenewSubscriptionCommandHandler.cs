@@ -25,7 +25,9 @@ internal class RenewSubscriptionCommandHandler(
             ?? throw new NotFoundException($"this tenant with id {request.tenantId} not found");
         var plan = await plansRepository.GetByIdAsync(tenant.Subscription.PlanId)
             ?? throw new NotFoundException($"this plan with id {tenant.Subscription.PlanId} not found");
-        tenant.RenewSubscription(plan.Duration.Value, dateTimeProvider.UtcNow);
+        var result = tenant.RenewSubscription(plan.Duration.Value, dateTimeProvider.UtcNow);
+        if (result.IsFailure)
+            return Result.Failure(result.Error);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

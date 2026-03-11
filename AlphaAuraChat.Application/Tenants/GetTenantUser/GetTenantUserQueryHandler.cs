@@ -19,13 +19,11 @@ public class GetTenantUserQueryHandler(
     ITenantRepository tenantRepository,
     IUserRepository userRepository) : IQueryHandler<GetTenantUserQuery, IEnumerable<UserResponse>>
 {
-    private readonly ITenantRepository _tenantRepository = tenantRepository;
-    private readonly IUserRepository _userRepository = userRepository;
     public async Task<Result<IEnumerable<UserResponse>>> Handle(GetTenantUserQuery request, CancellationToken cancellationToken)
     {
-        var Tenant = await _tenantRepository.GetByIdAsync(request.TenantId, cancellationToken)
+        var Tenant = await tenantRepository.GetByIdAsync(request.TenantId, cancellationToken)
             ?? throw new NotFoundException($"Tenant with id {request.TenantId} not found.");
-        IEnumerable<User> users = await _userRepository.GetByTenantIdAsync(request.TenantId, cancellationToken);
+        IEnumerable<User> users = await userRepository.GetByTenantIdAsync(request.TenantId, cancellationToken);
         if (!users.Any())
             throw new NotFoundException($"No users found for tenant with id {request.TenantId}.");
         IEnumerable<UserResponse> userResponses = users.Select(user => new UserResponse
