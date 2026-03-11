@@ -4,12 +4,9 @@ namespace AlphaAuraChat.Application.Abstractions.FileStorage;
 
 public interface IFileStorage
 {
-    Task<Result<string>> UploadAsync(
-        MediaUploadModel media,
-        CancellationToken cancellationToken = default);
-
-    Task<Result<List<string>>> UploadAsync(
-        IEnumerable<MediaUploadModel> media,
+    Task<Result> UploadAsync(
+        Stream media,
+        string path,
         CancellationToken cancellationToken = default);
 
     Task<Stream> DownloadAsync(
