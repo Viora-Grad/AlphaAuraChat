@@ -148,4 +148,4 @@ Admin marks invoice as paid → MarkInvoicePaidCommand → same flow as webhook
 
 
 > **Note:** Only the trigger changes when Paymob is integrated.
-> Commands, handlers, and domain events require **no modifications**.
+> Commands, handlers, and domain events require **no modifications**.  
