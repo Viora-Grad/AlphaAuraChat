@@ -15,14 +15,14 @@ internal sealed class ActivateTenantCommandHandler(
     ITenantRepository tenantRepository,
     IUnitOfWork unitOfWork) : ICommandHandler<ActivateTenantCommand>
 {
-    private readonly ITenantRepository _tenantRepository = tenantRepository;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     public async Task<Result> Handle(ActivateTenantCommand request, CancellationToken cancellationToken)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(request.tenantId, cancellationToken)
+        var tenant = await tenantRepository.GetByIdAsync(request.tenantId, cancellationToken)
             ?? throw new NotFoundException($"Tenant with id {request.tenantId} not found");
-        tenant.Activate();
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var result = tenant.Activate();
+        if (result.IsFailure)
+            return Result.Failure(result.Error);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
 
     }

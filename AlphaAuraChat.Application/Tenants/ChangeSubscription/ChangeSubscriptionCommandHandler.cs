@@ -18,17 +18,17 @@ internal class ChangeSubscriptionCommandHandler(
     IUnitOfWork unitOfWork) :
     ICommandHandler<ChangeSubscriptionCommand>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IPlansRepository _planRepository = planRepository;
-    private readonly ITenantRepository _tenantRepository = tenantRepository;
+
     public async Task<Result> Handle(ChangeSubscriptionCommand request, CancellationToken cancellationToken)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(request.tenantId, cancellationToken)
+        var tenant = await tenantRepository.GetByIdAsync(request.tenantId, cancellationToken)
             ?? throw new NotFoundException($"this tenant with id {request.tenantId} not found");
-        var plan = await _planRepository.GetByIdAsync(request.plandId)
+        var plan = await planRepository.GetByIdAsync(request.plandId)
             ?? throw new NotFoundException($"this plan with id {request.plandId} not found");
-        tenant.ChangeSubscription(request.plandId);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var result = tenant.ChangeSubscription(request.plandId);
+        if (result.IsFailure)
+            return Result.Failure(result.Error);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 }
