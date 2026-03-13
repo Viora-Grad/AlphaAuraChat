@@ -6,7 +6,7 @@ using AlphaAuraChat.Domain.Plans;
 
 namespace AlphaAuraChat.Application.Plans.GetPlan;
 
-internal sealed class GetPlanQueryHandler(IPlansRepository plansRepository) : IQueryHandler<GetPlanQuery, PlanResponse>
+public sealed class GetPlanQueryHandler(IPlansRepository plansRepository) : IQueryHandler<GetPlanQuery, PlanResponse>
 {
     public async Task<Result<PlanResponse>> Handle(GetPlanQuery request, CancellationToken cancellationToken)
     {
