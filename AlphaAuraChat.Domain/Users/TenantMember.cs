@@ -1,4 +1,5 @@
-﻿using AlphaAuraChat.Domain.Users.Internal;
+﻿using AlphaAuraChat.Domain.Abstractions;
+using AlphaAuraChat.Domain.Users.Internal;
 
 namespace AlphaAuraChat.Domain.Users;
 
@@ -25,5 +26,14 @@ public sealed class TenantMember : User
             lastName
             );
         return tenantMember;
+    }
+
+    public Result ChangeRole(Role role)
+    {
+        var checkRoleResult = Role.CheckRole(role);
+        if (checkRoleResult.IsFailure)
+            return Result.Failure(checkRoleResult.Error);
+        _roles.Add(role);
+        return Result.Success();
     }
 }
