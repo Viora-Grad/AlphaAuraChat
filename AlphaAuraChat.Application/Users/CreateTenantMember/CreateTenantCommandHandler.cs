@@ -6,6 +6,13 @@ using AlphaAuraChat.Domain.Users;
 
 namespace AlphaAuraChat.Application.Users.CreateTenantMember;
 
+/// <summary>
+/// Handles the CreateTenantMemberCommand by adding a new member to a 
+/// tenant. This encapsulates the logic for initializing tenant 
+/// membership and associating users with tenant entities.
+/// </summary>
+
+
 public class CreateTenantCommandHandler(
     ITenantRepository tenantRepository,
     IUnitOfWork unitOfWork,

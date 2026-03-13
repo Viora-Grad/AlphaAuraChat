@@ -6,6 +6,13 @@ using AlphaAuraChat.Domain.Users;
 
 namespace AlphaAuraChat.Application.Users.CreateCustomer;
 
+/// <summary>
+/// Handles the CreateCustomerCommand by creating a new customer record 
+/// in the system. This ensures proper initialization of customer data 
+/// and integrates with domain rules for customer management.
+/// </summary>
+
+
 public sealed class CreateCustomerCommandHandler(
     ITenantRepository tenantRepository,
     IUnitOfWork unitOfWork,

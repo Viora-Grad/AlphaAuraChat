@@ -5,6 +5,13 @@ using AlphaAuraChat.Domain.Users;
 
 namespace AlphaAuraChat.Application.Users.ChangeTenantMemberRole;
 
+/// <summary>
+/// Handles the ChangeTenantMemberRoleCommand by updating tenant member 
+/// details such as roles or attributes. This ensures tenant membership 
+/// information remains accurate and consistent within the domain.
+/// </summary>
+
+
 public class ChangeTenantMemberCommandHandler(
     ITenantMemberRepository tenantMemberRepository,
     IUnitOfWork unitOfWork) : ICommandHandler<ChangeTenantMemberRoleCommand>

@@ -3,6 +3,14 @@ using FluentValidation;
 
 namespace AlphaAuraChat.Application.Users.CreateTenantMember;
 
+/// <summary>
+/// Validates whether a given role is correct and recognized 
+/// within the system. This ensures that only authorized and 
+/// predefined roles are accepted, maintaining consistency and 
+/// enforcing access control rules.
+/// </summary>
+
+
 public class CreateTenantMemberCommandValidator : AbstractValidator<CreateTenantMemberCommand>
 {
     public CreateTenantMemberCommandValidator()
