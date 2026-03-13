@@ -14,4 +14,16 @@ public sealed class TenantMember : User
         LastName = lastName;
     }
     private TenantMember() : base() { } // for EfCore
+
+    public static TenantMember Create(FirstName firstName, LastName lastName, Role role, Guid tenantId)
+    {
+
+        var tenantMember = new TenantMember(
+            Guid.NewGuid(),
+            tenantId,
+            firstName,
+            lastName
+            );
+        return tenantMember;
+    }
 }
