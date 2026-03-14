@@ -1,4 +1,5 @@
 ﻿using AlphaAuraChat.Domain.Abstractions;
+using AlphaAuraChat.Domain.Billings.Events;
 using AlphaAuraChat.Domain.Billings.Internal;
 using AlphaAuraChat.Domain.Shared;
 
@@ -61,6 +62,7 @@ public class Invoice : Entity
         // TODO: Set TransactionId after integrating with the payment provider.
         PaidAtUtc = DateTime.UtcNow;
         Status = InvoiceStatus.Paid;
+        RaiseDomainEvent(new InvoicePaidEvent(Id, ClientId));
 
         return Result.Success();
     }
@@ -71,6 +73,7 @@ public class Invoice : Entity
             return Result.Failure(InvoiceErrors.OverdueAfterPayment);
 
         Status = InvoiceStatus.Overdue;
+        RaiseDomainEvent(new InvoiceOverdueEvent(Id, ClientId));
 
         return Result.Success();
     }
