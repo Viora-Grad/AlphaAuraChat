@@ -12,9 +12,20 @@ internal abstract class Repository<T>(ApplicationDbContext dbContext)
     // for the read queries resulting in better memory management and performance
 
     #region query ops
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await DbContext.Set<T>().FindAsync([id], cancellationToken);
+        return DbContext.Set<T>().FindAsync([id], cancellationToken).AsTask();
+    }
+
+    /// <summary>
+    /// returns Queryable to allow further filtering and projection on the database side resulting in better performance and memory management
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    public IQueryable<T> GetByIds(IEnumerable<Guid> ids)
+    {
+        return DbContext.Set<T>()
+            .Where(e => ids.Contains(e.Id));
     }
     #endregion  
 
