@@ -1,3 +1,5 @@
-﻿namespace AlphaAuraChat.Application.Messages.GetMessages;
+﻿using AlphaAuraChat.Application.Abstractions.Messaging;
 
-internal sealed record GetMessagesQuery();
+namespace AlphaAuraChat.Application.Messages.GetMessages;
+
+internal sealed record GetMessagesQuery(Guid ConversationId, int MessageCount) : IQuery<IEnumerable<MessageResponse>>;
