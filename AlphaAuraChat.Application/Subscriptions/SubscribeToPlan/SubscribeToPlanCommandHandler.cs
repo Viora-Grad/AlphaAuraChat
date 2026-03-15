@@ -16,7 +16,7 @@ namespace AlphaAuraChat.Application.Subscriptions.SubscribeToPlan;
 /// The invoice is generated with the plan's price and a default expiry of 7 days.
 /// For simplicity, we are assuming that there are no third party fees or service fees,
 /// but this can be adjusted once we have more information about the fees structure from Paymob or any other payment provider we integrate with.<br/>
-/// <remark><strong>Handle method returns the invoice instance created for that subscription</strong></remark>
+/// <remark><strong>Handle method returns the invoice instance created for that subscription to allow further processing into payment flow</strong></remark>
 /// </summary>
 
 
