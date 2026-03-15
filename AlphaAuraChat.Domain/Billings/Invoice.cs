@@ -6,7 +6,8 @@ namespace AlphaAuraChat.Domain.Billings;
 
 public class Invoice : Entity
 {
-    public Guid ClientId { get; private set; } = default!;
+    public Guid ClientId { get; private set; } = default!; // ClientId references TenantId, as each tenant is a client in the billing system.
+    public Guid? TransactionId { get; private set; } // TransactionId is set when the invoice is paid, referencing the payment transaction in the payment provider.
 
     public Money ThirdPartyFees { get; private set; } = default!;
     public Money ServiceFees { get; private set; } = default!;
@@ -57,6 +58,7 @@ public class Invoice : Entity
         if (InvoiceStatus.Paid == Status)
             return Result.Failure(InvoiceErrors.AlreadyPaid);
 
+        // TODO: Set TransactionId after integrating with the payment provider.
         PaidAtUtc = DateTime.UtcNow;
         Status = InvoiceStatus.Paid;
 
