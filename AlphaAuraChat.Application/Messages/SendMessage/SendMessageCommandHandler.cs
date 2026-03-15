@@ -5,8 +5,8 @@ using AlphaAuraChat.Application.Abstractions.Messaging;
 using AlphaAuraChat.Application.Abstractions.Realtime;
 using AlphaAuraChat.Domain.Abstractions;
 using AlphaAuraChat.Domain.Conversations;
-using AlphaAuraChat.Domain.Media;
 using AlphaAuraChat.Domain.Messages;
+using Microsoft.Extensions.Options;
 
 namespace AlphaAuraChat.Application.Messages.SendMessage;
 
@@ -20,10 +20,11 @@ namespace AlphaAuraChat.Application.Messages.SendMessage;
 internal sealed class SendMessageCommandHandler(
     IMessagesRepository messagesRepository,
     IConversationRepository conversationRepository,
-    IMediaRepository mediaRepository,
+    IMessageMediasRepository mediaRepository,
     IDateTimeProvider dateTimeProvider,
     IFileStorage storage,
     IRealtimeNotifier realTimeNotifier,
+    IOptions<FileStorageOptions> storageOptions,
     IUnitOfWork unitOfWork) : ICommandHandler<SendMessageCommand>
 {
     public async Task<Result> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -33,7 +34,7 @@ internal sealed class SendMessageCommandHandler(
             request.SenderId,
             request.Content,
             dateTimeProvider.UtcNow,
-            request.Media is not null && request.Media.Any());
+            request.Medias is not null && request.Medias.Any());
 
         var conversation = await conversationRepository.GetByIdAsync(request.ConversationId, cancellationToken) ??
             throw new NotFoundException($"Conversation with id {request.ConversationId} does not exist");
@@ -42,7 +43,7 @@ internal sealed class SendMessageCommandHandler(
 
         messagesRepository.Add(message);
 
-        var mediaSaveResult = await SaveAndUploadMedia(request.Media, message.Id, cancellationToken);
+        var mediaSaveResult = await SaveAndUploadMedia(request.Medias, message.Id, cancellationToken);
 
         if (mediaSaveResult.IsFailure)
             return mediaSaveResult;
@@ -52,9 +53,10 @@ internal sealed class SendMessageCommandHandler(
             request.ConversationId,
             request.Content,
             message.SentAtUtc,
-            request.Media,
+            request.Medias,
             cancellationToken);
 
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 
@@ -67,7 +69,8 @@ internal sealed class SendMessageCommandHandler(
         List<MessageMedia> messageMedias = [];
         foreach (var media in mediaUpload)
         {
-            var mediaResult = MessageMedia.Create(messageId, MimeToMediaTypeConvertor.Convert(media.Type), media.Content.Length, media.Name);
+            var mediaResult = MessageMedia
+                .Create(messageId, MimeToMediaTypeConvertor.Convert(media.Type), media.Content.Length, media.Name, dateTimeProvider.UtcNow);
 
             if (mediaResult.IsFailure)
                 return Result.Failure(mediaResult.Error);
@@ -82,7 +85,7 @@ internal sealed class SendMessageCommandHandler(
 
         foreach (var (media, entity) in mediaUpload.Zip(messageMedias))
         {
-            var path = $"media/{entity.Id}-{media.Name}";
+            var path = $"{storageOptions.Value.StoragePath}/{entity.Id}-{media.Name}";
 
             var result = await storage.UploadAsync(media.Content, path, cancellationToken);
 
@@ -91,11 +94,8 @@ internal sealed class SendMessageCommandHandler(
         }
 
         // reroll the media upload if any of the uploads have failed and remove the failed media entities from the database to maintain consistency
-        if (failedMediaIds.Count != 0)
-        {
-            mediaRepository.RemoveRange(failedMediaIds);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-        }
+        mediaRepository.RemoveRange(failedMediaIds);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
