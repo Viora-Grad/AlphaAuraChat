@@ -3,7 +3,7 @@ namespace AlphaAuraChat.Domain.Subscriptions;
 
 public interface ISubscriptionsRepository
 {
-    public void AddSubscription(Subscription subscription);
+    public void Add(Subscription subscription);
 
     public Task<Subscription?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
