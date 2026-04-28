@@ -1,4 +1,6 @@
-﻿namespace AlphaAuraChat.Domain.Users;
+﻿using AlphaAuraChat.Domain.Abstractions;
+
+namespace AlphaAuraChat.Domain.Users;
 
 public sealed class Role
 {
@@ -15,4 +17,18 @@ public sealed class Role
     }
     public int Id { get; init; }
     public string Name { get; init; }
+
+    public static Result CheckRole(Role role)
+    {
+        var validrole = role.Name.ToLower() switch
+        {
+            "owner" => Owner,
+            "supervisor" => Supervisor,
+            "agent" => Agent,
+            _ => null
+        };
+        if (role is null)
+            return Result.Failure(RoleError.roleNotFound);
+        return Result.Success(role);
+    }
 }

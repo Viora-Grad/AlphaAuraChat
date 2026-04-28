@@ -10,4 +10,10 @@ public sealed class Customer : User
         RelativeId = relativeId;
     }
     private Customer() : base() { } // for EfCore
+
+
+    public static Customer Create(FirstName firstName, LastName lastName, Guid tenantId, RelativeId relativeId)
+    {
+        return new Customer(Guid.NewGuid(), tenantId, relativeId, firstName, lastName);
+    }
 }
